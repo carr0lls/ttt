@@ -2,7 +2,20 @@ function TicTacToe() {
   var game = this;
   
   game.addPiece = function(col, row) {
-
+    // If game has winner, return false
+    if (game.getGameWinner())
+      return false;
+    // Alternate current player's piece  
+    var piece = (game.currentPlayer === 1) ? 2 : 1;
+    // Add current player's piece to col at the lowest empty row
+    if (game.board[col][row] === 0) {
+      game.board[col][row] = piece;
+      // Update current player
+      game.currentPlayer = piece;
+      _isWinningMove(col, row);
+      return true;
+    }
+    return false;
   }
   
   game.getBoard = function() {
@@ -18,7 +31,12 @@ function TicTacToe() {
   }
 
   function _init() {
-
+    // Clear board and reset board pieces
+    _resetBoard();
+    // Winner go first, otherwise default player 1 go first
+    game.currentPlayer = (game.winner === 2) ? 1 : 2;
+    // Reset game winner
+    game.winner = 0;
   }
   
   function _resetBoard() {
