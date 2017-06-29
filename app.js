@@ -25,6 +25,10 @@ function TicTacToe() {
   game.getGameWinner = function() {
     return game.winner;
   }
+
+  game.getWinnerPieces = function() {
+    return game.winningPieces;
+  }
   
   game.reset = function() {
     _init();
@@ -37,6 +41,7 @@ function TicTacToe() {
     game.currentPlayer = (game.winner === 2) ? 1 : 2;
     // Reset game winner
     game.winner = 0;
+    game.winningPieces = [];
   }
   
   function _resetBoard() {
