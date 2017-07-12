@@ -1,5 +1,18 @@
 function TicTacToe() {
   var game = this;
+  var winningCombos = [
+    // Horizontals
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    // Verticals
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    // Diagonals
+    [0, 4, 8],
+    [2, 4, 6]
+  ];
   
   game.addPiece = function(position) {
     // If game has winner, return false
@@ -8,9 +21,9 @@ function TicTacToe() {
     // Add current player's piece to given position
     if (game.board[position] === '') {
       game.board[position] = game.currentPlayer;
+      _isWinningMove(game.currentPlayer);
       // Update current player
       game.currentPlayer = (game.currentPlayer === 1) ? 2 : 1;
-      _isWinningMove(position);
       return true;
     }
     return false;
@@ -49,8 +62,18 @@ function TicTacToe() {
                   '', '', ''];
   }  
 
-  function _isWinningMove(position) {
-    console.log('check winning move');
+  function _isWinningMove(player) {
+    // check winner logic
+    for (let combo of winningCombos) {
+      if (game.board[combo[0]] === player && 
+          game.board[combo[1]] === player && 
+          game.board[combo[2]] === player) {
+        game.winner = game.currentPlayer;
+        game.winningPieces = combo;
+        return true;
+      }
+    }
+    return false;
   }
   
   _init();
@@ -60,23 +83,45 @@ function TicTacToe() {
 
 var game = new TicTacToe();
 
-var gridPieces = document.getElementsByClassName('piece');
+function App(game) {
+  var gridPieces = document.getElementsByClassName('piece');
 
-function renderBoard(board) {
-  for (var i=0; i < board.length; i++) {
-    gridPieces[i].dataset.piece = board[i];
+  function renderBoard(board) {
+    for (var i=0; i < board.length; i++) {
+      gridPieces[i].dataset.piece = board[i];
+    }
   }
-}
 
-function setGridIndex(index) {
-  return function() {
-    game.addPiece(index);
+  function setGridIndex(index) {
+    return function() {
+      if (game.addPiece(index))
+        renderBoard(game.getBoard());
+      else
+        alert('cannot add piece here, try another position');
+    }
+  }
+
+  for (var i=0; i < gridPieces.length; i++) {
+    gridPieces[i].addEventListener('click', setGridIndex(i));
+  }
+
+  function bindEventListeners() {
+    document.getElementById('reset').addEventListener('click', function() {
+      reset();
+    });
+  }
+
+  function init() {
     renderBoard(game.getBoard());
+    bindEventListeners();
   }
+
+  function reset() {
+    game.reset();
+    init();
+  }
+
+  init();
 }
 
-for (var i=0; i < gridPieces.length; i++) {
-  gridPieces[i].addEventListener('click', setGridIndex(i));
-}
-
-renderBoard(game.getBoard());
+var app = new App(game);
