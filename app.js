@@ -1,18 +1,16 @@
 function TicTacToe() {
   var game = this;
   
-  game.addPiece = function(col, row) {
+  game.addPiece = function(position) {
     // If game has winner, return false
     if (game.getGameWinner())
       return false;
-    // Alternate current player's piece  
-    var piece = (game.currentPlayer === 1) ? 2 : 1;
-    // Add current player's piece to col at the lowest empty row
-    if (game.board[col][row] === 0) {
-      game.board[col][row] = piece;
+    // Add current player's piece to given position
+    if (game.board[position] === '') {
+      game.board[position] = game.currentPlayer;
       // Update current player
-      game.currentPlayer = piece;
-      _isWinningMove(col, row);
+      game.currentPlayer = (game.currentPlayer === 1) ? 2 : 1;
+      _isWinningMove(position);
       return true;
     }
     return false;
@@ -38,7 +36,7 @@ function TicTacToe() {
     // Clear board and reset board pieces
     _resetBoard();
     // Winner go first, otherwise default player 1 go first
-    game.currentPlayer = (game.winner === 2) ? 1 : 2;
+    game.currentPlayer = (game.winner === 2) ? 2 : 1;
     // Reset game winner
     game.winner = 0;
     game.winningPieces = [];
@@ -46,13 +44,13 @@ function TicTacToe() {
   
   function _resetBoard() {
     // Clear board
-    game.board = [[0,0,0],
-                  [0,0,0],
-                  [0,0,0]];
+    game.board = ['', '', '',
+                  '', '', '',
+                  '', '', ''];
   }  
 
-  function _isWinningMove(col, row) {
-    
+  function _isWinningMove(position) {
+    console.log('check winning move');
   }
   
   _init();
@@ -61,3 +59,24 @@ function TicTacToe() {
 }
 
 var game = new TicTacToe();
+
+var gridPieces = document.getElementsByClassName('piece');
+
+function renderBoard(board) {
+  for (var i=0; i < board.length; i++) {
+    gridPieces[i].dataset.piece = board[i];
+  }
+}
+
+function setGridIndex(index) {
+  return function() {
+    game.addPiece(index);
+    renderBoard(game.getBoard());
+  }
+}
+
+for (var i=0; i < gridPieces.length; i++) {
+  gridPieces[i].addEventListener('click', setGridIndex(i));
+}
+
+renderBoard(game.getBoard());
